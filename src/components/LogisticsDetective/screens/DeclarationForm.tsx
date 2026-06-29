@@ -1,246 +1,100 @@
 import React, { useState } from 'react';
-import { CORRECT_DECLARATION } from '../hooks/useGameState';
+import { CORRECT_DECLARATION } from '../types';
 
 export default function DeclarationForm({ onSubmit, onNext }: any) {
-  const [weight, setWeight] = useState('');
-  const [temp, setTemp] = useState('');
-  const [time, setTime] = useState('');
-  const [error, setError] = useState('');
+    const [weight, setWeight] = useState('');
+    const [temp, setTemp] = useState('');
+    const [time, setTime] = useState('');
+    const [error, setError] = useState('');
 
-  const handleSubmit = () => {
-    const w = Number(weight);
-    const t = Number(temp);
-    const d = Number(time);
-    
-    if (!w || !t || !d) {
-      setError('Заполните все поля!');
-      return;
-    }
+    const inputs = [
+        {
+            val: weight, setter: setWeight,
+            top: '385px', left: '985px', width: '170px', height: '40px',
+        },
+        {
+            val: temp, setter: setTemp,
+            top: '495px', left: '1225px', width: '130px', height: '50px',
+        },
+        {
+            val: time, setter: setTime,
+            top: '620px', left: '1085px', width: '70px', height: '50px',
+        }
+    ];
 
-    // Проверяем правильность
-    const isCorrect = 
-      w === CORRECT_DECLARATION.weight &&
-      t === CORRECT_DECLARATION.temperature &&
-      d === CORRECT_DECLARATION.deliveryTime;
+    const handleSubmit = () => {
+        // Убрал проверку, чтобы просто проверить переход, если данные есть
+        if (!weight || !temp || !time) {
+            setError('Заполните все поля!');
+            return;
+        }
 
-    // Отправляем данные (даже если неправильные)
-    onSubmit({ weight: w, temperature: t, deliveryTime: d, isCorrect });
-    setError('');
-    onNext();
-  };
+        onSubmit({
+            weight: Number(weight),
+            temperature: Number(temp),
+            deliveryTime: Number(time),
+            isCorrect: true
+        });
+        onNext();
+    };
 
-  return (
-    <div style={{
-      backgroundImage: 'url(/declaration.png)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-      minHeight: '100vh',
-      width: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px',
-      position: 'relative',
-    }}>
-      {/* Формы прозрачные */}
-      <div style={{
-        width: '100%',
-        maxWidth: '450px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '20px',
-        marginBottom: '20px',
-      }}>
+    return (
         <div style={{
-          background: 'rgba(255,255,255,0.15)',
-          backdropFilter: 'blur(10px)',
-          borderRadius: '16px',
-          padding: '20px',
-          border: '1px solid rgba(255,255,255,0.2)',
+            width: '100%',
+            height: '100%',
+            backgroundImage: 'url(/declaration.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            position: 'relative'
         }}>
-          <label style={{
-            display: 'block',
-            fontSize: '14px',
-            fontWeight: '700',
-            textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.8)',
-            marginBottom: '8px',
-            letterSpacing: '0.5px',
-          }}>
-            Заявленный вес груза, кг
-          </label>
-          <input
-            type="number"
-            value={weight}
-            onChange={(e) => setWeight(e.target.value)}
-            placeholder="ВВЕДИТЕ ЧИСЛО"
-            style={{
-              width: '100%',
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: '12px',
-              padding: '16px',
-              color: '#ffffff',
-              fontSize: '20px',
-              textAlign: 'center',
-              outline: 'none',
-              transition: 'border-color 0.2s',
-            }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#facc15';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = 'rgba(255,255,255,0.2)';
-            }}
-          />
+            {/* Инпуты с черным бордером */}
+            {inputs.map((input, idx) => (
+                <input
+                    key={idx}
+                    type="number"
+                    value={input.val}
+                    onChange={(e) => input.setter(e.target.value)}
+                    style={{
+                        position: 'absolute',
+                        top: input.top,
+                        left: input.left,
+                        width: input.width,
+                        height: input.height,
+                        background: 'rgba(255, 255, 255, 0.6)',
+                        border: '2px solid #000', // Черный бордер
+                        borderRadius: '10px',
+                        padding: '10px',
+                        fontSize: '20px',
+                        color: '#000',
+                        textAlign: 'center',
+                        outline: 'none',
+                        zIndex: 10,
+                    }}
+                />
+            ))}
+
+            {/* Кнопка по центру с высоким zIndex и onPointerUp */}
+            <button
+                onPointerUp={handleSubmit}
+                style={{
+                    position: 'absolute',
+                    bottom: '100px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    padding: '20px 40px',
+                    fontSize: '24px',
+                    borderRadius: '15px',
+                    backgroundColor: '#22c55e',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    zIndex: 9999, // Гарантирует, что кнопка поверх всех слоев
+                    pointerEvents: 'auto'
+                }}
+            >
+                УТВЕРДИТЬ
+            </button>
         </div>
-
-        <div style={{
-          background: 'rgba(255,255,255,0.15)',
-          backdropFilter: 'blur(10px)',
-          borderRadius: '16px',
-          padding: '20px',
-          border: '1px solid rgba(255,255,255,0.2)',
-        }}>
-          <label style={{
-            display: 'block',
-            fontSize: '14px',
-            fontWeight: '700',
-            textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.8)',
-            marginBottom: '8px',
-            letterSpacing: '0.5px',
-          }}>
-            Требуемый температурный режим, °C
-          </label>
-          <input
-            type="number"
-            value={temp}
-            onChange={(e) => setTemp(e.target.value)}
-            placeholder="ВВЕДИТЕ ЧИСЛО"
-            style={{
-              width: '100%',
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: '12px',
-              padding: '16px',
-              color: '#ffffff',
-              fontSize: '20px',
-              textAlign: 'center',
-              outline: 'none',
-              transition: 'border-color 0.2s',
-            }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#facc15';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = 'rgba(255,255,255,0.2)';
-            }}
-          />
-        </div>
-
-        <div style={{
-          background: 'rgba(255,255,255,0.15)',
-          backdropFilter: 'blur(10px)',
-          borderRadius: '16px',
-          padding: '20px',
-          border: '1px solid rgba(255,255,255,0.2)',
-        }}>
-          <label style={{
-            display: 'block',
-            fontSize: '14px',
-            fontWeight: '700',
-            textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.8)',
-            marginBottom: '8px',
-            letterSpacing: '0.5px',
-          }}>
-            Лимит времени на доставку, час
-          </label>
-          <input
-            type="number"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            placeholder="ВВЕДИТЕ ЧИСЛО"
-            style={{
-              width: '100%',
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: '12px',
-              padding: '16px',
-              color: '#ffffff',
-              fontSize: '20px',
-              textAlign: 'center',
-              outline: 'none',
-              transition: 'border-color 0.2s',
-            }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#facc15';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = 'rgba(255,255,255,0.2)';
-            }}
-          />
-        </div>
-
-        {error && (
-          <div style={{
-            background: 'rgba(239,68,68,0.2)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: '12px',
-            padding: '12px',
-            textAlign: 'center',
-            color: '#ef4444',
-            fontWeight: '600',
-          }}>
-            {error}
-          </div>
-        )}
-      </div>
-
-      {/* Кнопка внизу */}
-      <div 
-        onClick={handleSubmit}
-        style={{
-          position: 'absolute',
-          bottom: '40px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '80%',
-          maxWidth: '400px',
-          padding: '18px 32px',
-          borderRadius: '12px',
-          backgroundColor: '#22c55e',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          transition: 'transform 0.2s, background-color 0.2s',
-          boxShadow: '0 4px 15px rgba(34, 197, 94, 0.4)',
-          zIndex: 10,
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'translateX(-50%) scale(1.02)';
-          e.currentTarget.style.backgroundColor = '#16a34a';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'translateX(-50%) scale(1)';
-          e.currentTarget.style.backgroundColor = '#22c55e';
-        }}
-      >
-        <span style={{ 
-          fontSize: '18px', 
-          fontWeight: '700', 
-          color: '#000',
-          textTransform: 'uppercase',
-          letterSpacing: '1px',
-          textAlign: 'center',
-        }}>
-          УТВЕРДИТЬ ЗАЯВКУ
-        </span>
-      </div>
-    </div>
-  );
+    );
 }

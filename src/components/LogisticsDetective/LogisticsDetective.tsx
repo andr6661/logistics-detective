@@ -3,7 +3,8 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 
-import { useGameState, CORRECT_BOXES } from './hooks/useGameState';
+import { useGameState } from './hooks/useGameState';
+import { CORRECT_BOXES } from './types';
 import MainMenu from './screens/MainMenu';
 import ContractBriefing from './screens/ContractBriefing';
 import DeclarationForm from './screens/DeclarationForm';
@@ -16,7 +17,15 @@ import FinalScreen from './screens/FinalScreen';
 
 import './styles.css';
 
-const isTouch = () => 'ontouchstart' in window;
+// Определяем тач-устройство
+const isTouch = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+// Оптимальные настройки для сенсоров
+const dndOptions = {
+  enableMouseEvents: true, // Позволяет работать мышкой на десктопе
+  enableTouchEvents: true, // Включает тач
+  delayTouchStart: 50,     // Важно: небольшая задержка для корректного захвата
+};
 
 function LogisticsDetective() {
   const {
@@ -35,76 +44,77 @@ function LogisticsDetective() {
     resetGame,
   } = useGameState();
 
+  // Выбираем бэкенд один раз при инициализации
   const Backend = isTouch() ? TouchBackend : HTML5Backend;
 
-  switch (state.currentScreen) {
-    case 'mainMenu':
-      return <MainMenu onStart={() => setScreen('contractBriefing')} />;
+  return (
+      <DndProvider backend={Backend} options={isTouch() ? dndOptions : {}}>
+        <div className="app-container">
+          {state.currentScreen === 'mainMenu' && (
+              <MainMenu onStart={() => setScreen('contractBriefing')} />
+          )}
 
-    case 'contractBriefing':
-      return <ContractBriefing onNext={() => setScreen('declarationForm')} />;
+          {state.currentScreen === 'contractBriefing' && (
+              <ContractBriefing onNext={() => setScreen('declarationForm')} />
+          )}
 
-    case 'declarationForm':
-      return <DeclarationForm onSubmit={setDeclaration} onNext={() => setScreen('warehouseLoading')} />;
+          {state.currentScreen === 'declarationForm' && (
+              <DeclarationForm onSubmit={setDeclaration} onNext={() => setScreen('warehouseLoading')} />
+          )}
 
-    case 'warehouseLoading':
-      return (
-        <DndProvider backend={Backend}>
-          <WarehouseLoading
-            loadedBoxes={state.loadedBoxes}
-            correctBoxes={CORRECT_BOXES}
-            onLoadBox={loadBox}
-            onUnloadBox={unloadBox}
-            onComplete={(isCorrect: boolean) => {
-              completeLoading(isCorrect);
-              setScreen('transportRoute');
-            }}
-          />
-        </DndProvider>
-      );
+          {state.currentScreen === 'warehouseLoading' && (
+              <WarehouseLoading
+                  loadedBoxes={state.loadedBoxes}
+                  correctBoxes={CORRECT_BOXES}
+                  onLoadBox={loadBox}
+                  onUnloadBox={unloadBox}
+                  onComplete={(isCorrect: boolean) => {
+                    completeLoading(isCorrect);
+                    setScreen('transportRoute');
+                  }}
+              />
+          )}
 
-    case 'transportRoute':
-      return (
-        <TransportRoute
-          progress={state.routeProgress}
-          isComplete={state.routeComplete}
-          hasIncident={state.hasIncident}
-          onUpdateProgress={updateRouteProgress}
-          onComplete={completeRoute}
-        />
-      );
+          {state.currentScreen === 'transportRoute' && (
+              <TransportRoute
+                  progress={state.routeProgress}
+                  isComplete={state.routeComplete}
+                  hasIncident={state.hasIncident}
+                  onUpdateProgress={updateRouteProgress}
+                  onComplete={completeRoute}
+              />
+          )}
 
-    case 'incidentAlert':
-      return <IncidentAlert onNext={() => setScreen('investigation')} />;
+          {state.currentScreen === 'incidentAlert' && (
+              <IncidentAlert onNext={() => setScreen('investigation')} />
+          )}
 
-    case 'investigation':
-      return (
-        <Investigation
-          viewedClues={state.viewedClues}
-          onViewClue={viewClue}
-          onNext={() => setScreen('courtRoom')}
-          hasIncident={state.hasIncident}
-        />
-      );
+          {state.currentScreen === 'investigation' && (
+              <Investigation
+                  viewedClues={state.viewedClues}
+                  onViewClue={viewClue}
+                  onNext={() => setScreen('courtRoom')}
+                  hasIncident={state.hasIncident}
+              />
+          )}
 
-    case 'courtRoom':
-      return (
-        <CourtRoom
-          onSelectVerdict={setCourtVerdict}
-          onSelectSource={setCourtSource}
-          onSubmit={submitVerdict}
-          selectedVerdict={state.courtVerdict}
-          selectedSource={state.courtSource}
-          isSubmitted={false}
-        />
-      );
+          {state.currentScreen === 'courtRoom' && (
+              <CourtRoom
+                  onSelectVerdict={setCourtVerdict}
+                  onSelectSource={setCourtSource}
+                  onSubmit={submitVerdict}
+                  selectedVerdict={state.courtVerdict}
+                  selectedSource={state.courtSource}
+                  isSubmitted={false}
+              />
+          )}
 
-    case 'final':
-      return <FinalScreen finalState={state.finalState} onRestart={resetGame} />;
-
-    default:
-      return <MainMenu onStart={() => setScreen('contractBriefing')} />;
-  }
+          {state.currentScreen === 'final' && (
+              <FinalScreen finalState={state.finalState} onRestart={resetGame} />
+          )}
+        </div>
+      </DndProvider>
+  );
 }
 
 export default LogisticsDetective;

@@ -1,79 +1,51 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useDragLayer } from 'react-dnd';
 
-const ItemTypes = {
-  BOX: 'box',
-};
+const ItemTypes = { BOX: 'box' };
 
 export default function DragLayer() {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [draggedType, setDraggedType] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
+    const { item, itemType, isDragging, clientOffset } = useDragLayer((monitor) => ({
+        item: monitor.getItem(),
+        itemType: monitor.getItemType(),
+        isDragging: monitor.isDragging(),
+        clientOffset: monitor.getClientOffset(),
+    }));
 
-  const {
-    item,
-    itemType,
-    isDragging: isDraggingGlobal,
-    clientOffset,
-  } = useDragLayer((monitor) => ({
-    item: monitor.getItem(),
-    itemType: monitor.getItemType(),
-    isDragging: monitor.isDragging(),
-    clientOffset: monitor.getClientOffset(),
-  }));
-
-  useEffect(() => {
-    if (isDraggingGlobal && clientOffset && itemType === ItemTypes.BOX) {
-      setPosition({
-        x: clientOffset.x,
-        y: clientOffset.y,
-      });
-      setDraggedType((item as any)?.type || null);
-      setIsDragging(true);
-    } else {
-      setIsDragging(false);
-      setDraggedType(null);
+    if (!isDragging || itemType !== ItemTypes.BOX || !clientOffset) {
+        return null;
     }
-  }, [isDraggingGlobal, clientOffset, itemType, item]);
 
-  const getImageName = (type: string) => {
-    switch(type) {
-      case 'banana': return 'banana.png';
-      case 'mango': return 'mango.png';
-      case 'apple': return 'apple.png';
-      case 'apelsin': return 'apelsin.png';
-      default: return '';
-    }
-  };
+    // ВНИМАНИЕ: Мы больше не делим clientOffset на scale внутри слоя,
+    // так как браузер автоматически учитывает трансформации родителя при расчете
+    // позиции в fixed-контейнере.
 
-  if (!isDragging || !draggedType) return null;
-
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        left: position.x - 125,
-        top: position.y - 125,
-        width: '250px',
-        height: '250px',
-        pointerEvents: 'none',
-        zIndex: 9999,
-        transform: 'scale(1.15)',    // ← убрал rotate(-5deg)
-        opacity: 0.9,
-        filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.5))',
-      }}
-    >
-      <img
-        src={`/${getImageName(draggedType)}`}
-        alt=""
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'contain',
-          pointerEvents: 'none',
-        }}
-        draggable={false}
-      />
-    </div>
-  );
+    return (
+        <div
+            style={{
+                position: 'fixed',
+                left: 0,
+                top: 0,
+                transform: `translate(${clientOffset.x}px, ${clientOffset.y}px)`,
+                pointerEvents: 'none',
+                zIndex: 9999,
+                opacity: 0.9,
+            }}
+        >
+            <div style={{
+                width: '120px', // Соответствует размеру коробок в WarehouseLoading.tsx
+                height: '120px',
+                transform: 'translate(-50%, -50%)',
+            }}>
+                <img
+                    src={`/${(item as any).type}.png`}
+                    alt=""
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                    }}
+                />
+            </div>
+        </div>
+    );
 }
