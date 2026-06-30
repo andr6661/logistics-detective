@@ -53,7 +53,7 @@ export default function IncidentAlert({ onNext }: IncidentAlertProps) {
                     lineHeight: '1.6',
                     marginBottom: '30px',
                 }}>
-                    Получатель сообщил, что <strong style={{ color: '#facc15' }}>100% фруктов сгнили</strong>.<br/>
+                    Получатель сообщил, что <strong style={{ color: '#facc15' }}>75% фруктов испортилсь</strong>.<br/>
                     Клиент выставил претензию на <strong style={{ color: '#facc15' }}>100 000 ₽</strong>
                 </p>
 

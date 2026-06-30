@@ -5,7 +5,10 @@ import { TouchBackend } from 'react-dnd-touch-backend';
 
 import { useGameState } from './hooks/useGameState';
 import { CORRECT_BOXES } from './types';
+
+// Импорты экранов
 import MainMenu from './screens/MainMenu';
+import Intro from './screens/Intro';
 import ContractBriefing from './screens/ContractBriefing';
 import DeclarationForm from './screens/DeclarationForm';
 import WarehouseLoading from './screens/WarehouseLoading';
@@ -17,17 +20,10 @@ import FinalScreen from './screens/FinalScreen';
 
 import './styles.css';
 
-// Определяем тач-устройство
 const isTouch = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+const dndOptions = { enableMouseEvents: true, enableTouchEvents: true, delayTouchStart: 50 };
 
-// Оптимальные настройки для сенсоров
-const dndOptions = {
-  enableMouseEvents: true, // Позволяет работать мышкой на десктопе
-  enableTouchEvents: true, // Включает тач
-  delayTouchStart: 50,     // Важно: небольшая задержка для корректного захвата
-};
-
-function LogisticsDetective() {
+export default function LogisticsDetective() {
   const {
     state,
     setScreen,
@@ -44,33 +40,42 @@ function LogisticsDetective() {
     resetGame,
   } = useGameState();
 
-  // Выбираем бэкенд один раз при инициализации
   const Backend = isTouch() ? TouchBackend : HTML5Backend;
 
   return (
       <DndProvider backend={Backend} options={isTouch() ? dndOptions : {}}>
-        <div className="app-container">
+        <div className="app-container" style={{ width: '100vw', minHeight: '100vh', position: 'relative' }}>
+
+          {/* 1. Главное меню */}
           {state.currentScreen === 'mainMenu' && (
-              <MainMenu onStart={() => setScreen('contractBriefing')} />
+              <MainMenu onStart={() => setScreen('intro')} />
           )}
 
+          {/* 2. Интро после меню */}
+          {state.currentScreen === 'intro' && (
+              <Intro onNext={() => setScreen('contractBriefing')} />
+          )}
+
+          {/* 3. Остальной путь игры */}
           {state.currentScreen === 'contractBriefing' && (
               <ContractBriefing onNext={() => setScreen('declarationForm')} />
           )}
 
           {state.currentScreen === 'declarationForm' && (
-              <DeclarationForm onSubmit={setDeclaration} onNext={() => setScreen('warehouseLoading')} />
+              <DeclarationForm
+                  onSubmit={setDeclaration}
+                  onNext={() => setScreen('warehouseLoading')}
+              />
           )}
 
           {state.currentScreen === 'warehouseLoading' && (
               <WarehouseLoading
-                  loadedBoxes={state.loadedBoxes}
+                  loadedBoxes={state.loadedBoxes || []} // Защита от undefined
                   correctBoxes={CORRECT_BOXES}
                   onLoadBox={loadBox}
                   onUnloadBox={unloadBox}
                   onComplete={(isCorrect: boolean) => {
                     completeLoading(isCorrect);
-                    setScreen('transportRoute');
                   }}
               />
           )}
@@ -116,5 +121,3 @@ function LogisticsDetective() {
       </DndProvider>
   );
 }
-
-export default LogisticsDetective;

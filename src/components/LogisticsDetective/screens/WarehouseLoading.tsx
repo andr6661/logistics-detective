@@ -12,6 +12,7 @@ interface Box {
 }
 
 export default function WarehouseLoading({ loadedBoxes, onLoadBox, onUnloadBox, onComplete }: any) {
+    // Доступные коробки на складе
     const availableBoxes: Box[] = [
         { id: 'banana1', type: 'banana', x: '100px', y: '260px' },
         { id: 'banana2', type: 'banana', x: '100px', y: '170px' },
@@ -27,11 +28,9 @@ export default function WarehouseLoading({ loadedBoxes, onLoadBox, onUnloadBox, 
         { id: 'apelsin3', type: 'apelsin', x: '500px', y: '570px' },
     ];
 
-    // Проверка, находится ли конкретная коробка в грузовике
     const isBoxInTruck = (id: string) => loadedBoxes.some((b: any) => b.id === id);
 
     const DraggableBox = ({ box }: { box: Box }) => {
-        // Если коробка уже в грузовике, не рисуем её на складе
         if (isBoxInTruck(box.id)) return null;
 
         const [{ isDragging }, drag] = useDrag(() => ({
@@ -97,7 +96,7 @@ export default function WarehouseLoading({ loadedBoxes, onLoadBox, onUnloadBox, 
             }}>
                 {loadedBoxes.map((box: any) => (
                     <div
-                        key={box.id} // Уникальный ключ по ID
+                        key={box.id}
                         onPointerDown={(e) => { e.stopPropagation(); onUnloadBox(box.id); }}
                         style={{ width: '120px', height: '120px', cursor: 'pointer', touchAction: 'none' }}
                     >
@@ -124,7 +123,21 @@ export default function WarehouseLoading({ loadedBoxes, onLoadBox, onUnloadBox, 
             <TruckDropZone />
 
             <button
-                onPointerUp={() => onComplete(loadedBoxes.length === 6)}
+                onPointerUp={() => {
+                    const counts = loadedBoxes.reduce((acc: any, box: any) => {
+                        acc[box.type] = (acc[box.type] || 0) + 1;
+                        return acc;
+                    }, {});
+
+                    // Условие: 3 манго, 2 банана, 1 яблоко = всего 6 коробок
+                    const isCorrect =
+                        counts.mango === 3 &&
+                        counts.banana === 2 &&
+                        counts.apple === 1 &&
+                        loadedBoxes.length === 6;
+
+                    onComplete(isCorrect);
+                }}
                 style={{
                     position: 'absolute',
                     bottom: '50px',

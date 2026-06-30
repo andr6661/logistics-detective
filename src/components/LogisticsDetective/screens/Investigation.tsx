@@ -17,36 +17,24 @@ export default function Investigation({ viewedClues, onViewClue, onNext, hasInci
     };
 
     const closeModal = () => setModalOpen(null);
-    const allViewed = viewedClues.length === 3;
+    const allViewed = viewedClues.length === 5; // Теперь нужно просмотреть 5 улик
 
     const cluePositions = [
         { id: 'clue1', x: '220px', y: '270px', w: '200px', h: '200px' },
         { id: 'clue2', x: '1010px', y: '145px', w: '105px', h: '200px' },
         { id: 'clue3', x: '1150px', y: '680px', w: '235px', h: '100px' },
+        { id: 'clue4', x: '500px', y: '100px', w: '150px', h: '150px' }, // Новая позиция
+        { id: 'clue5', x: '700px', y: '500px', w: '150px', h: '150px' }, // Новая позиция
     ];
 
-    // Функция для получения контента с фото и текстом
     const getClueContent = (id: string) => {
-        const clueData = CLUES[id as keyof typeof CLUES];
-
         switch (id) {
-            case 'clue1':
-                return {
-                    image: '/vodila.png',
-                    text: "Сотрудники таможенной службы попросили выгрузить товар из грузовика для досмотра, после чего бесследно исчезли на 6 часов. Все это время кузов оставался открытым, а водитель был вынужден дожидаться в зоне ожидания без возможности контролировать сохранность груза."
-                };
-            case 'clue2':
-                return {
-                    image: '/termometr.png',
-                    text: "В помещении зоны досмотра весь день работал неисправный кондиционер. Температурные датчики зафиксировали критические +25°C, что полностью нарушает правила транспортировки скоропортящихся продуктов."
-                };
-            case 'clue3':
-                return {
-                    image: '/tamozenik.png',
-                    text: "Был проведен поверхностный досмотр коробок. В ходе проверки целостность заводских пломб была нарушена, однако в акте осмотра не зафиксировано ни одного замечания по состоянию упаковки."
-                };
-            default:
-                return { image: '', text: 'Информация отсутствует.' };
+            case 'clue1': return { image: '/vodila.png', text: "Таможня продержала грузовик 6 часов с открытым кузовом." };
+            case 'clue2': return { image: '/termometr.png', text: "В зоне досмотра работал неисправный кондиционер." };
+            case 'clue3': return { image: '/tamozenik.png', text: "Никаких нарушений при досмотре не выявлено." };
+            case 'clue4': return { image: '/akt.png', text: "Акт погрузки подтверждает: товар был упакован строго по регламенту и опломбирован на складе." };
+            case 'clue5': return { image: '/zakon.png', text: "Регламент таможенной службы: сотрудник имеет право вскрывать пломбы для досмотра, но несет полную ответственность за сохранность груза во время процесса." };
+            default: return { image: '', text: 'Информация отсутствует.' };
         }
     };
 
@@ -61,9 +49,9 @@ export default function Investigation({ viewedClues, onViewClue, onNext, hasInci
                 return (
                     <div key={clue.id} onClick={() => handleViewClue(clue.id)} style={{
                         position: 'absolute', left: pos?.x, top: pos?.y, width: pos?.w, height: pos?.h,
-                        border: isViewed ? '4px solid rgba(250,204,21,0.5)' : '3px dashed rgba(255,255,255,0.3)',
+                        border: isViewed ? '4px solid #facc15' : '3px dashed #fff',
                         borderRadius: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center',
-                        justifyContent: 'center', fontSize: '32px',
+                        justifyContent: 'center', fontSize: '32px', background: 'rgba(0,0,0,0.2)'
                     }}>
                         {isViewed ? '✅' : '🔍'}
                     </div>
@@ -82,17 +70,13 @@ export default function Investigation({ viewedClues, onViewClue, onNext, hasInci
                         <h2 style={{ fontSize: '32px', color: '#facc15', marginBottom: '30px', textAlign: 'center' }}>
                             {CLUES[modalOpen as keyof typeof CLUES].title}
                         </h2>
-
                         <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}>
                             <img src={getClueContent(modalOpen).image} style={{ width: '300px', borderRadius: '12px' }} alt="улика" />
-                            <p style={{ fontSize: '20px', lineHeight: '1.6' }}>
-                                {getClueContent(modalOpen).text}
-                            </p>
+                            <p style={{ fontSize: '20px', lineHeight: '1.6' }}>{getClueContent(modalOpen).text}</p>
                         </div>
-
                         <div style={{ textAlign: 'center', marginTop: '40px' }}>
                             <button onClick={closeModal} style={{ padding: '15px 40px', fontSize: '20px', cursor: 'pointer', borderRadius: '10px', border: 'none', background: '#facc15', fontWeight: 'bold' }}>
-                                ЗАКРЫТЬ
+                                ПОНЯТНО
                             </button>
                         </div>
                     </div>
@@ -105,7 +89,7 @@ export default function Investigation({ viewedClues, onViewClue, onNext, hasInci
                 color: '#fff', borderRadius: '12px', border: 'none', cursor: allViewed ? 'pointer' : 'default',
                 fontWeight: '700', textTransform: 'uppercase'
             }}>
-                {allViewed ? 'ПЕРЕЙТИ В ЗАЛ СУДА' : `ИЗУЧИТЕ УЛИКИ (${viewedClues.length}/3)`}
+                {allViewed ? 'ПРИНЯТЬ РЕШЕНИЕ' : `ИЗУЧИТЕ УЛИКИ (${viewedClues.length}/5)`}
             </button>
         </div>
     );
