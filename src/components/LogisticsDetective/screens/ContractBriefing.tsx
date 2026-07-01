@@ -21,27 +21,34 @@ export default function ContractBriefing({ onNext }: { onNext: () => void }) {
             <button
                 onClick={onNext}
                 style={{
-                    width: '400px',
-                    padding: '20px 40px',
-                    borderRadius: '12px',
-                    backgroundColor: '#22c55e',
-                    border: 'none',
-                    cursor: 'pointer',
-                    transition: 'transform 0.2s, background-color 0.2s',
-                    boxShadow: '0 4px 15px rgba(34, 197, 94, 0.4)',
-                    fontSize: '24px',
+                    position: 'absolute',
+                    bottom: '40px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    padding: '18px 50px',
+                    fontSize: '22px',
                     fontWeight: '700',
-                    color: '#000',
+                    borderRadius: '14px',
+                    border: 'none',
+                    backgroundColor: '#22c55e',
+                    color: '#fff',
+                    cursor: 'pointer',
+                    zIndex: 9999,
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 4px 20px rgba(34, 197, 94, 0.3)',
+                    letterSpacing: '0.5px',
                     textTransform: 'uppercase',
-                    letterSpacing: '1px',
+                    minWidth: '250px',
                 }}
                 onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'scale(1.05)';
                     e.currentTarget.style.backgroundColor = '#16a34a';
+                    e.currentTarget.style.transform = 'translateX(-50%) scale(1.03)';
+                    e.currentTarget.style.boxShadow = '0 6px 30px rgba(34, 197, 94, 0.4)';
                 }}
                 onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
                     e.currentTarget.style.backgroundColor = '#22c55e';
+                    e.currentTarget.style.transform = 'translateX(-50%) scale(1)';
+                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(34, 197, 94, 0.3)';
                 }}
             >
                 ПЕРЕЙТИ К ЗАЯВКЕ

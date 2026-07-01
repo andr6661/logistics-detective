@@ -67,7 +67,7 @@ export default function CourtRoom({
                     marginBottom: '30px',
                 }}>
                     <span style={{ fontSize: '20px', fontWeight: 700, color: '#facc15', letterSpacing: '2px' }}>
-                        ⚖️ ЗАЛ СУДА
+                        ПРИНЯТЬ РЕШЕНИЕ
                     </span>
                 </div>
 
@@ -123,16 +123,17 @@ export default function CourtRoom({
                     style={{
                         width: '100%',
                         padding: '20px',
-                        background: canSubmit ? '#facc15' : '#444',
+                        background: canSubmit ? '#22c55e' : '#444',
                         fontSize: '18px',
                         fontWeight: 900,
                         textTransform: 'uppercase',
                         borderRadius: '12px',
                         cursor: canSubmit ? 'pointer' : 'default',
                         border: 'none',
+                        color:"white"
                     }}
                 >
-                    {isSubmitted ? 'ВЕРДИКТ ВЫНЕСЕН' : 'УТВЕРДИТЬ ВЕРДИКТ'}
+                    {isSubmitted ? 'ВЕРДИКТ ВЫНЕСЕН' : 'ДАЛЕЕ'}
                 </button>
             </div>
         </div>

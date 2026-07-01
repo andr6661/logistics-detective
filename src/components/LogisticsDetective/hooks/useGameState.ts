@@ -95,17 +95,31 @@ export const useGameState = () => {
 
   const completeRoute = useCallback(() => {
     setState((prev) => {
-      // Здесь проверяем, все ли мы сделали правильно до этого
-      const hasError = !prev.declaration?.isCorrect || !prev.loadingCorrect;
+      const hasError = !prev.declarationCorrect || !prev.loadingCorrect;
+
+      console.log('🚀 completeRoute:', {
+        declarationCorrect: prev.declarationCorrect,
+        loadingCorrect: prev.loadingCorrect,
+        hasError
+      });
+
       if (hasError) {
         return {
           ...prev,
           currentScreen: 'final',
           routeComplete: true,
-          finalState: { isWon: false, message: "Ошибка в документах или загрузке!" }
+          finalState: {
+            isWon: false,
+            message: "❌ ДЕЛО ПРОИГРАНО! Вы допустили ошибку в декларации или загрузке. Компания выплатила 100 000 ₽ штрафа."
+          }
         };
       }
-      return { ...prev, currentScreen: 'incidentAlert', routeComplete: true };
+
+      return {
+        ...prev,
+        currentScreen: 'incidentAlert',
+        routeComplete: true
+      };
     });
   }, []);
 
@@ -116,15 +130,17 @@ export const useGameState = () => {
     }));
   }, []);
 
-  const setCourtVerdict = useCallback((verdict: string) => { setState((prev) => ({ ...prev, courtVerdict: verdict })); }, []);
-  const setCourtSource = useCallback((source: string) => { setState((prev) => ({ ...prev, courtSource: source })); }, []);
+  const setCourtVerdict = useCallback((verdict: string) => {
+    setState((prev) => ({ ...prev, courtVerdict: verdict }));
+  }, []);
 
-  // ИСПРАВЛЕННАЯ ЛОГИКА ПОБЕДЫ
+  const setCourtSource = useCallback((source: string) => {
+    setState((prev) => ({ ...prev, courtSource: source }));
+  }, []);
+
   const submitVerdict = useCallback(() => {
     setState((prev) => {
       const isCorrectVerdict = prev.courtVerdict === 'thirdParty' && prev.courtSource === 'insurance';
-
-      // Игрок побеждает, если вердикт верен И всё предыдущее было сделано правильно
       const isWon = isCorrectVerdict && prev.declarationCorrect && prev.loadingCorrect;
 
       return {
@@ -133,14 +149,16 @@ export const useGameState = () => {
         finalState: {
           isWon,
           message: isWon
-              ? "ДЕЛО ВЫИГРАНО! Вы доказали невиновность компании."
-              : "ВЕРДИКТ НЕВЕРНЫЙ! Компания признана виновной, убытки не покрыты."
+              ? "В ходе расследования установлено, что на складе компании 'ГЛОБАЛ ТРАНС' груз был надлежащим образом упакован и опломбирован. Однако из-за длительного простоя на таможне — более 6 часов при высокой температуре — фрукты утратили свои товарные качества:\n\n- Бананы потемнели.\n- Манго стало мягким\n\nОтветственность за порчу груза лежит на таможенной службе. В данном случае страховая компания полностью покроет убытки в размере 100 000 ₽. "
+              : "Компания 'ГЛОБАЛ ТРАНС'  должна выплатить штраф в размере 100 000 ₽ "
         }
       };
     });
   }, []);
 
-  const resetGame = useCallback(() => { setState(initialState); }, []);
+  const resetGame = useCallback(() => {
+    setState(initialState);
+  }, []);
 
   return {
     state,

@@ -17,23 +17,23 @@ export default function Investigation({ viewedClues, onViewClue, onNext, hasInci
     };
 
     const closeModal = () => setModalOpen(null);
-    const allViewed = viewedClues.length === 5; // Теперь нужно просмотреть 5 улик
+    const allViewed = viewedClues.length === 5;
 
     const cluePositions = [
-        { id: 'clue1', x: '220px', y: '270px', w: '200px', h: '200px' },
+        { id: 'clue1', x: '100px', y: '300px', w: '200px', h: '440px' },
         { id: 'clue2', x: '1010px', y: '145px', w: '105px', h: '200px' },
-        { id: 'clue3', x: '1150px', y: '680px', w: '235px', h: '100px' },
-        { id: 'clue4', x: '500px', y: '100px', w: '150px', h: '150px' }, // Новая позиция
-        { id: 'clue5', x: '700px', y: '500px', w: '150px', h: '150px' }, // Новая позиция
+        { id: 'clue3', x: '1050px', y: '400px', w: '300px', h: '300px' },
+        { id: 'clue4', x: '520px', y: '250px', w: '300px', h: '300px' },
+        { id: 'clue5', x: '1330px', y: '110px', w: '280px', h: '280px' },
     ];
 
     const getClueContent = (id: string) => {
         switch (id) {
-            case 'clue1': return { image: '/vodila.png', text: "Таможня продержала грузовик 6 часов с открытым кузовом." };
+            case 'clue1': return { image: '/vodila.png', text: "Сотрудники таможни попросили меня выгрузить все коробки из кузова для проведения полного досмотра. Я ждал возвращения сотрудника более 6 часов, чтобы загрузить товар обратно." };
             case 'clue2': return { image: '/termometr.png', text: "В зоне досмотра работал неисправный кондиционер." };
             case 'clue3': return { image: '/tamozenik.png', text: "Никаких нарушений при досмотре не выявлено." };
             case 'clue4': return { image: '/akt.png', text: "Акт погрузки подтверждает: товар был упакован строго по регламенту и опломбирован на складе." };
-            case 'clue5': return { image: '/zakon.png', text: "Регламент таможенной службы: сотрудник имеет право вскрывать пломбы для досмотра, но несет полную ответственность за сохранность груза во время процесса." };
+            case 'clue5': return { image: '/pravila.png', text: "Регламент таможенной службы: сотрудник имеет право вскрывать пломбы для досмотра, но несет полную ответственность за сохранность груза во время процесса." };
             default: return { image: '', text: 'Информация отсутствует.' };
         }
     };
@@ -47,13 +47,37 @@ export default function Investigation({ viewedClues, onViewClue, onNext, hasInci
                 const isViewed = viewedClues.includes(clue.id);
                 const pos = cluePositions.find((p) => p.id === clue.id);
                 return (
-                    <div key={clue.id} onClick={() => handleViewClue(clue.id)} style={{
-                        position: 'absolute', left: pos?.x, top: pos?.y, width: pos?.w, height: pos?.h,
-                        border: isViewed ? '4px solid #facc15' : '3px dashed #fff',
-                        borderRadius: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center',
-                        justifyContent: 'center', fontSize: '32px', background: 'rgba(0,0,0,0.2)'
-                    }}>
-                        {isViewed ? '✅' : '🔍'}
+                    <div
+                        key={clue.id}
+                        onClick={() => handleViewClue(clue.id)}
+                        style={{
+                            position: 'absolute',
+                            left: pos?.x,
+                            top: pos?.y,
+                            width: pos?.w,
+                            height: pos?.h,
+                            borderRadius: '20px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.3s ease',
+
+                        }}
+                        onMouseEnter={(e) => {
+                            if (!isViewed) {
+                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.6)';
+                                e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            if (!isViewed) {
+                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)';
+                                e.currentTarget.style.background = 'rgba(0,0,0,0.15)';
+                            }
+                        }}
+                    >
+                        {/* Лупа и галочка УБРАНЫ — теперь просто прозрачная зона */}
                     </div>
                 );
             })}
@@ -89,7 +113,7 @@ export default function Investigation({ viewedClues, onViewClue, onNext, hasInci
                 color: '#fff', borderRadius: '12px', border: 'none', cursor: allViewed ? 'pointer' : 'default',
                 fontWeight: '700', textTransform: 'uppercase'
             }}>
-                {allViewed ? 'ПРИНЯТЬ РЕШЕНИЕ' : `ИЗУЧИТЕ УЛИКИ (${viewedClues.length}/5)`}
+                {allViewed ? 'ПРИНЯТЬ РЕШЕНИЕ' : `ИЗУЧИТЕ ПОДСКАЗКИ (${viewedClues.length}/5)`}
             </button>
         </div>
     );

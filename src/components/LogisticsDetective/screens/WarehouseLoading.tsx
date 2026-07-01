@@ -129,7 +129,6 @@ export default function WarehouseLoading({ loadedBoxes, onLoadBox, onUnloadBox, 
                         return acc;
                     }, {});
 
-                    // Условие: 3 манго, 2 банана, 1 яблоко = всего 6 коробок
                     const isCorrect =
                         counts.mango === 3 &&
                         counts.banana === 2 &&
@@ -140,20 +139,34 @@ export default function WarehouseLoading({ loadedBoxes, onLoadBox, onUnloadBox, 
                 }}
                 style={{
                     position: 'absolute',
-                    bottom: '50px',
+                    bottom: '40px',
                     left: '50%',
                     transform: 'translateX(-50%)',
-                    width: '400px',
-                    padding: '20px',
-                    borderRadius: '12px',
-                    background: '#22c55e',
-                    fontSize: '24px',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
+                    padding: '18px 50px',
+                    fontSize: '22px',
+                    fontWeight: '700',
+                    borderRadius: '14px',
                     border: 'none',
-                    color: 'white',
+                    backgroundColor: '#22c55e',
+                    color: '#fff',
+                    cursor: 'pointer',
                     zIndex: 9999,
-                    touchAction: 'manipulation'
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 4px 20px rgba(34, 197, 94, 0.3)',
+                    letterSpacing: '0.5px',
+                    textTransform: 'uppercase',
+                    minWidth: '250px',
+                    touchAction: 'manipulation',
+                }}
+                onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#16a34a';
+                    e.currentTarget.style.transform = 'translateX(-50%) scale(1.03)';
+                    e.currentTarget.style.boxShadow = '0 6px 30px rgba(34, 197, 94, 0.4)';
+                }}
+                onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#22c55e';
+                    e.currentTarget.style.transform = 'translateX(-50%) scale(1)';
+                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(34, 197, 94, 0.3)';
                 }}
             >
                 ОПЕЧАТАТЬ КУЗОВ
